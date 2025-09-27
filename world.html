@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>世界时钟 · 北京时间</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app" style="opacity:1;filter:none;transform:none">
+      <header class="topbar">
+        <div class="brand"><span class="logo">🕑</span><span class="title">世界时钟</span></div>
+        <nav class="nav-links">
+          <a href="index.html">首页</a>
+          <a href="stopwatch.html">秒表</a>
+          <a href="alarms.html">多闹钟</a>
+          <a href="ai.html">AI</a>
+          <a href="settings.html">设置</a>
+        </nav>
+      </header>
+
+      <section class="world glass">
+        <header class="world-h">世界时钟</header>
+        <div class="world-add">
+          <input id="worldInput" list="zones" placeholder="输入 IANA 时区，如 Europe/London" />
+          <button id="worldAdd" class="btn">添加</button>
+        </div>
+        <div class="world-tools">
+          <label>排序
+            <select id="worldSort">
+              <option value="name">按名称</option>
+              <option value="time">按当前时间</option>
+            </select>
+          </label>
+          <label>基准
+            <select id="worldBase">
+              <option value="Asia/Shanghai" selected>Asia/Shanghai</option>
+              <option value="UTC">UTC</option>
+            </select>
+          </label>
+        </div>
+        <datalist id="zones">
+          <option value="UTC" />
+          <option value="Asia/Shanghai" />
+          <option value="Asia/Tokyo" />
+          <option value="Asia/Hong_Kong" />
+          <option value="Asia/Singapore" />
+          <option value="Europe/London" />
+          <option value="Europe/Berlin" />
+          <option value="America/New_York" />
+          <option value="America/Los_Angeles" />
+          <option value="Australia/Sydney" />
+        </datalist>
+        <div id="worldList" class="world-list"></div>
+        <div id="worldDiff" class="world-diff"></div>
+      </section>
+
+      <footer class="footer"><span>点击添加更多时区，列表会自动保存</span></footer>
+    </main>
+
+    <script src="advanced.js" defer></script>
+  </body>
+  </html>

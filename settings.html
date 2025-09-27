@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>设置 · 北京时间</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app" style="opacity:1;filter:none;transform:none">
+      <header class="topbar">
+        <div class="brand"><span class="logo">🕑</span><span class="title">北京时间 · 设置</span></div>
+        <nav class="nav-links">
+          <a href="index.html">首页</a>
+          <a href="world.html">世界时钟</a>
+          <a href="stopwatch.html">秒表</a>
+          <a href="alarms.html">多闹钟</a>
+          <a href="ai.html">AI</a>
+        </nav>
+      </header>
+
+      <section class="glass" style="padding:14px;border-radius:16px">
+        <h2 style="margin:0 0 10px 0">设置</h2>
+        <div class="settings-body">
+          <label class="setting-item">
+            <input id="enableCal" type="checkbox" checked /> 启用网络校准
+          </label>
+          <label class="setting-item">
+            <input id="clickSound" type="checkbox" checked /> 点击音效
+          </label>
+          <label class="setting-item">主题
+            <select id="themeSelect">
+              <option value="auto" selected>自动</option>
+              <option value="light">浅色</option>
+              <option value="dark">深色</option>
+            </select>
+          </label>
+          <label class="setting-item">动效级别
+            <select id="motionSelect">
+              <option value="auto" selected>自动</option>
+              <option value="low">低</option>
+              <option value="off">关闭</option>
+            </select>
+          </label>
+          <label class="setting-item">音量
+            <input id="volumeRange" type="range" min="0" max="100" value="40" />
+            <span id="volumeVal" class="hint">40%</span>
+          </label>
+          <label class="setting-item">主题色
+            <input id="accentColor" type="color" value="#0ea5e9" />
+            <input id="accent2Color" type="color" value="#7c3aed" />
+          </label>
+          <label class="setting-item">字体
+            <input id="fontFamily" type="text" placeholder="自定义字体族，如: SF Pro, Segoe UI" />
+          </label>
+          <div class="setting-item">
+            <button id="exportCfg" class="btn">导出配置</button>
+            <label class="btn">导入配置<input id="importCfg" type="file" accept="application/json" style="display:none" /></label>
+          </div>
+        </div>
+      </section>
+
+      <footer class="footer"><span>设置将自动保存到本地</span></footer>
+    </main>
+
+    <script src="advanced.js" defer></script>
+  </body>
+  </html>

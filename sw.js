@@ -1,0 +1,28 @@
+const CACHE_NAME = 'cst-cache-v1';
+const CORE = [
+  './',
+  './index.html',
+  './world.html',
+  './stopwatch.html',
+  './alarms.html',
+  './ai.html',
+  './settings.html',
+  './styles.css',
+  './script.js',
+  './advanced.js',
+  './ai.js',
+  './manifest.webmanifest'
+];
+
+self.addEventListener('install', (e)=>{
+  e.waitUntil(caches.open(CACHE_NAME).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting()));
+});
+self.addEventListener('activate', (e)=>{
+  e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE_NAME).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));
+});
+self.addEventListener('fetch', (e)=>{
+  const req = e.request;
+  e.respondWith(
+    caches.match(req).then(res => res || fetch(req).then(r=>{ const copy = r.clone(); caches.open(CACHE_NAME).then(c=>c.put(req, copy)).catch(()=>{}); return r; }).catch(()=>res))
+  );
+});

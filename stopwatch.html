@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>秒表 · 北京时间</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app" style="opacity:1;filter:none;transform:none">
+      <header class="topbar">
+        <div class="brand"><span class="logo">🕑</span><span class="title">秒表</span></div>
+        <nav class="nav-links">
+          <a href="index.html">首页</a>
+          <a href="world.html">世界时钟</a>
+          <a href="alarms.html">多闹钟</a>
+          <a href="ai.html">AI</a>
+          <a href="settings.html">设置</a>
+        </nav>
+      </header>
+
+      <section class="stopwatch glass">
+        <header class="sw-h">秒表</header>
+        <div class="sw-time" id="swTime">00:00:00.000</div>
+        <div class="sw-ctrl">
+          <button id="swStartStop" class="btn">开始</button>
+          <button id="swLap" class="btn">圈次</button>
+          <button id="swReset" class="btn ghost">重置</button>
+        </div>
+        <div id="swLaps" class="sw-laps"></div>
+      </section>
+
+      <footer class="footer"><span>支持圈次与继续计时</span></footer>
+    </main>
+
+    <script src="advanced.js" defer></script>
+  </body>
+  </html>

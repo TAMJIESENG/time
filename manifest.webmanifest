@@ -1,0 +1,14 @@
+{
+  "name": "北京时间 · 精准时钟",
+  "short_name": "北京时间",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#0ea5e9",
+  "theme_color": "#0ea5e9",
+  "description": "优雅的北京时间展示，含网络授时、农历、节气、世界时钟与闹钟。",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}
+

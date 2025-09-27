@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI · 北京时间</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      .chat { padding:14px; }
+      .chat-messages { display:grid; gap:10px; padding:10px; border:1px solid hsl(var(--border)); border-radius:12px; background:hsl(var(--glass)); max-height:60vh; overflow:auto; }
+      .msg { padding:10px 12px; border-radius:12px; line-height:1.6; }
+      .msg.user { background:hsl(var(--accent)/0.12); justify-self:end; }
+      .msg.ai { background:hsl(var(--glass)); border:1px solid hsl(var(--border)); }
+      .msg .meta { display:flex; gap:8px; align-items:center; margin-bottom:6px; color:hsl(var(--muted)); font-size:12px; }
+      .msg .body { color:hsl(var(--text)); }
+      .msg .body pre { background: hsl(var(--bg-2)); border: 1px solid hsl(var(--border)); padding:10px; border-radius:10px; overflow:auto; }
+      .msg .body code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12px; }
+      .msg .body p { margin: 8px 0; }
+      .msg .actions { display:flex; gap:8px; justify-content:flex-end; margin-top:6px; }
+      .chat-input { display:flex; gap:8px; margin-top:10px; }
+      .chat-input textarea { flex:1; min-height:64px; resize:vertical; border:1px solid hsl(var(--border)); background:hsl(var(--glass)); color:hsl(var(--text)); border-radius:10px; padding:8px 10px; }
+      .conf { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:8px; color:hsl(var(--muted)); }
+      .conf input[type="password"], .conf input[type="text"], .conf select { border:1px solid hsl(var(--border)); background:hsl(var(--glass)); color:hsl(var(--text)); border-radius:10px; padding:6px 10px; }
+    </style>
+  </head>
+  <body>
+    <main class="app" style="opacity:1;filter:none;transform:none">
+      <header class="topbar">
+        <div class="brand"><span class="logo">🕑</span><span class="title">AI</span></div>
+        <nav class="nav-links">
+          <a href="index.html">首页</a>
+          <a href="world.html">世界时钟</a>
+          <a href="stopwatch.html">秒表</a>
+          <a href="alarms.html">多闹钟</a>
+          <a href="ai.html">AI</a>
+          <a href="settings.html">设置</a>
+        </nav>
+      </header>
+
+      <section class="glass chat">
+        <div class="conf">
+          <label>会话
+            <select id="sessionSel"></select>
+          </label>
+          <button id="sessionAdd" class="btn">新建</button>
+          <button id="sessionRename" class="btn ghost">重命名</button>
+          <button id="sessionDel" class="btn ghost">删除</button>
+          <button id="multiSelect" class="btn ghost">选择</button>
+          <button id="multiCopy" class="btn ghost">复制所选</button>
+          <button id="multiDel" class="btn ghost">删除所选</button>
+        </div>
+
+        <div class="conf">
+          <label>模型
+            <select id="aiModel">
+              <option value="deepseek-chat">deepseek-chat</option>
+              <option value="deepseek-coder">deepseek-coder</option>
+            </select>
+          </label>
+          <label>API Key
+            <input id="aiKey" type="password" placeholder="sk-...（仅保存在本机）" />
+          </label>
+          <button id="saveKey" class="btn">保存</button>
+          <label>温度
+            <input id="aiTemp" type="range" min="0" max="100" value="70" />
+            <span id="aiTempVal" class="hint">0.70</span>
+          </label>
+          <label>显示
+            <select id="aiRender">
+              <option value="md">Markdown</option>
+              <option value="raw">原文</option>
+            </select>
+          </label>
+          <button id="clearChat" class="btn ghost">清空</button>
+          <span class="hint">提示：浏览器直连会暴露密钥，生产建议走后端代理。</span>
+        </div>
+
+        <div class="conf">
+          <label style="flex:1 1 100%">系统提示
+            <textarea id="systemPrompt" placeholder="可选：为模型设置对话风格/约束" style="width:100%;min-height:60px"></textarea>
+          </label>
+          <button id="saveSys" class="btn">保存提示</button>
+        </div>
+
+        <div id="chatMessages" class="chat-messages"></div>
+        <div class="chat-input">
+          <textarea id="chatInput" placeholder="输入你的问题..."></textarea>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <button id="chatSend" class="btn">发送</button>
+            <button id="chatSearch" class="btn ghost">联网搜索</button>
+            <button id="chatStop" class="btn ghost">停止</button>
+            <button id="chatRetry" class="btn ghost">重试</button>
+            <div>
+              <button id="chatExport" class="btn ghost">导出</button>
+              <label class="btn">导入<input id="chatImport" type="file" accept="application/json" style="display:none" /></label>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <style>
+        .msg.selecting { outline: 2px dashed hsl(var(--accent) / 0.5); }
+        .msg .select-box { margin-right:8px; }
+        .msg .code-copy { position:absolute; top:6px; right:6px; font-size:12px; padding:4px 8px; border:1px solid hsl(var(--border)); background:hsl(var(--glass)); border-radius:8px; cursor:pointer; }
+        .msg .code-wrap { position:relative; }
+        /* 简易高亮 */
+        .tok-key { color:#2563eb; font-weight:600; }
+        .tok-str { color:#16a34a; }
+        .tok-com { color:#6b7280; font-style:italic; }
+        .tok-num { color:#a855f7; }
+        .tok-tag { color:#dc2626; }
+        .tok-attr{ color:#0ea5e9; }
+        .tok-pnc { color:#64748b; }
+        .msg .body img { max-width:100%; height:auto; border-radius:10px; border:1px solid hsl(var(--border)); }
+        .msg .body table { border-collapse: collapse; width:100%; overflow:auto; display:block; }
+        .msg .body th, .msg .body td { border:1px solid hsl(var(--border)); padding:6px 8px; }
+        .msg .body thead { background:hsl(var(--bg-2)); }
+      </style>
+
+      <footer class="footer"><span>DeepSeek API 直连（试验性质）</span></footer>
+    </main>
+
+    <script src="advanced.js" defer></script>
+    <script src="ai.js" defer></script>
+  </body>
+  </html>

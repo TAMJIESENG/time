@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>多闹钟 · 北京时间</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app" style="opacity:1;filter:none;transform:none">
+      <header class="topbar">
+        <div class="brand"><span class="logo">🕑</span><span class="title">多闹钟</span></div>
+        <nav class="nav-links">
+          <a href="index.html">首页</a>
+          <a href="world.html">世界时钟</a>
+          <a href="stopwatch.html">秒表</a>
+          <a href="ai.html">AI</a>
+          <a href="settings.html">设置</a>
+        </nav>
+      </header>
+
+      <section class="alarms glass">
+        <header class="sw-h">多闹钟</header>
+        <div class="ctrl-row wrap">
+          <input id="alarmLabel" type="text" placeholder="备注（可选）" />
+          <input id="alarmTime2" type="time" step="60" />
+          <label>重复
+            <select id="repeatMode">
+              <option value="once">一次</option>
+              <option value="daily">每天</option>
+              <option value="weekdays">工作日</option>
+              <option value="weekly">自定义周</option>
+            </select>
+          </label>
+          <div class="weekday" id="weekdayRow" style="display:none">
+            <label><input type="checkbox" data-wd="1" /> 周一</label>
+            <label><input type="checkbox" data-wd="2" /> 周二</label>
+            <label><input type="checkbox" data-wd="3" /> 周三</label>
+            <label><input type="checkbox" data-wd="4" /> 周四</label>
+            <label><input type="checkbox" data-wd="5" /> 周五</label>
+            <label><input type="checkbox" data-wd="6" /> 周六</label>
+            <label><input type="checkbox" data-wd="0" /> 周日</label>
+          </div>
+          <label>铃声
+            <select id="ringSelect">
+              <option value="soft">柔和</option>
+              <option value="bright">清脆</option>
+              <option value="bell">钟声</option>
+              <option value="url">自定义URL</option>
+            </select>
+          </label>
+          <input id="ringUrl" type="text" placeholder="https://example.com/alarm.mp3 (可选)" style="min-width:240px" />
+          <button id="testRing" class="btn">测试铃声</button>
+          <button id="addAlarm" class="btn">添加</button>
+        </div>
+        <div id="alarmsList" class="world-list"></div>
+      </section>
+
+      <footer class="footer"><span>支持每天/工作日/一次性闹钟</span></footer>
+    </main>
+
+    <script src="advanced.js" defer></script>
+  </body>
+  </html>

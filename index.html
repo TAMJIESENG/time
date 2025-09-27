@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <title>北京时间 · 精准时钟</title>
+    <meta name="description" content="一个优雅的北京时间展示页面，带加载动画与精美界面。" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <meta name="theme-color" content="#1d4ed8" />
+  </head>
+  <body>
+    <div id="loader" class="loader" aria-live="polite" aria-busy="true">
+      <div class="spinner" aria-hidden="true"></div>
+      <div class="loading-text">加载中 · 同步北京时间…</div>
+    </div>
+
+    <main id="app" class="app hidden">
+      <header class="topbar">
+        <div class="brand" aria-label="站点标题">
+          <span class="logo" aria-hidden="true">🕑</span>
+          <span class="title">北京时间</span>
+        </div>
+        <nav class="nav-links">
+          <a href="index.html">首页</a>
+          <a href="world.html">世界时钟</a>
+          <a href="stopwatch.html">秒表</a>
+          <a href="alarms.html">多闹钟</a>
+          <a href="ai.html">AI</a>
+          <a href="settings.html">设置</a>
+        </nav>
+      </header>
+
+      <section class="clock-card glass" aria-label="时钟">
+        <div class="digital" aria-live="polite">
+          <span id="hour" class="num">00</span>
+          <span class="sep" aria-hidden="true">:</span>
+          <span id="minute" class="num">00</span>
+          <span class="sep" aria-hidden="true">:</span>
+          <span id="second" class="num">00</span>
+          <span id="ms" class="ms">000</span>
+        </div>
+
+        <div class="date-line"><span id="dateText">0000年01月01日 星期一</span></div>
+
+        <div class="analog" id="analog" aria-hidden="true">
+          <div class="ticks" id="ticks"></div>
+          <div class="hand hour" id="hourHand"></div>
+          <div class="hand minute" id="minuteHand"></div>
+          <div class="hand second" id="secondHand"></div>
+          <div class="center-dot"></div>
+        </div>
+
+        <div class="meta-grid">
+          <div class="meta" id="calStatus" title="网络授时校准状态">校准中…</div>
+          <div class="meta" id="lunarText" title="农历信息">农历计算中…</div>
+          <div class="meta" id="termText" title="二十四节气">节气计算中…</div>
+          <div class="meta" id="sunText" title="日出与日落">日出/日落 计算中…</div>
+          <div class="meta" id="moonText" title="月相与照度">月相计算中…</div>
+          <div class="meta" id="festText" title="节日提示">节日计算中…</div>
+          <div class="meta" id="offsetWrap" title="偏移历史">
+            <span style="display:inline-block;margin-bottom:4px;color:inherit">偏移历史</span>
+            <svg id="offsetSpark" width="100%" height="30" viewBox="0 0 200 30" preserveAspectRatio="none"></svg>
+          </div>
+        </div>
+
+        <div class="controls glass">
+          <div class="ctrl-row">
+            <button id="toggleSound" class="btn" aria-pressed="false">报时音 关</button>
+            <button id="calibrateNow" class="btn">立即校准</button>
+            <button id="toggleSaver" class="btn">屏保</button>
+            <button id="copyTime" class="btn ghost">复制时间</button>
+            <button id="genPoster" class="btn ghost">生成海报</button>
+          </div>
+          <div class="ctrl-row">
+            <label class="field">闹钟
+              <input id="alarmTime" type="time" step="60" />
+            </label>
+            <button id="setAlarm" class="btn">设置闹钟</button>
+            <button id="clearAlarm" class="btn ghost">清除</button>
+            <span id="alarmStatus" class="hint">未设置</span>
+          </div>
+          <div class="ctrl-row wrap">
+            <label class="field">倒计时
+              <input id="cdMin" type="number" min="0" max="999" step="1" value="25" /> 分
+              <input id="cdSec" type="number" min="0" max="59" step="1" value="0" /> 秒
+            </label>
+            <button id="startCountdown" class="btn">开始</button>
+            <button id="pauseCountdown" class="btn ghost">暂停</button>
+            <button id="resetCountdown" class="btn ghost">重置</button>
+            <span id="cdStatus" class="hint">未启动</span>
+          </div>
+        </div>
+
+        <div class="subline">精准展示中国北京时间（Asia/Shanghai），支持网络授时校准与扩展功能</div>
+      </section>
+
+      <footer class="footer"><span>设计良好 · 响应迅速 · 纯前端</span></footer>
+    </main>
+
+    <div id="saver" class="saver hidden" aria-hidden="true">
+      <div class="saver-time" id="saverTime">00:00:00</div>
+      <div class="saver-date" id="saverDate">0000-00-00</div>
+    </div>
+
+    <script src="script.js" defer></script>
+    <script src="advanced.js" defer></script>
+  </body>
+  </html>
