@@ -117,6 +117,7 @@ body {
 .nav-links a.active { background: hsl(var(--accent) / 0.15); border-color: hsl(var(--accent) / 0.4); }
 .brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 700; }
 .brand .logo { font-size: 20px; }
+.brand img.logo { width: 22px; height: 22px; display: inline-block; }
 .brand .title { font-size: clamp(18px, 2.2vw, 22px); letter-spacing: .08em; }
 .tz { color: hsl(var(--muted)); font-size: 13px; letter-spacing: .06em; }
 

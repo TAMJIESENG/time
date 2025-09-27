@@ -10,6 +10,9 @@ const CORE = [
   './styles.css',
   './script.js',
   './advanced.js',
+  './world.js',
+  './stopwatch.js',
+  './settings.js',
   './ai.js',
   './manifest.webmanifest'
 ];
