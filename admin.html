@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>后台 · 北京时间</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="icon" href="icons/logo.svg" type="image/svg+xml" />
+  </head>
+  <body>
+    <main class="app" style="opacity:1;filter:none;transform:none">
+      <header class="topbar">
+        <div class="brand"><img class="logo" src="icons/logo.svg" alt="" /><span class="title">后台</span></div>
+        <nav class="nav-links">
+          <a href="index.html">首页</a>
+          <a href="profile.html">资料</a>
+        </nav>
+      </header>
+
+      <section class="glass" style="padding:14px;border-radius:16px;max-width:1080px;margin:0 auto;">
+        <h2 style="margin:0 0 12px 0">用户管理（演示）</h2>
+        <div class="admin-stats">
+          <div class="stat-card"><div class="num" id="stTotal">0</div><div class="lbl">用户总数</div></div>
+          <div class="stat-card"><div class="num" id="stAdmins">0</div><div class="lbl">管理员</div></div>
+          <div class="stat-card"><div class="num" id="stActive">0</div><div class="lbl">7天活跃</div></div>
+        </div>
+        <div class="admin-toolbar">
+          <input id="admSearch" class="input-like" type="search" placeholder="搜索用户名/邮箱" />
+          <select id="admRole">
+            <option value="all">全部角色</option>
+            <option value="admin">管理员</option>
+            <option value="user">普通用户</option>
+          </select>
+          <select id="admSort">
+            <option value="created_desc">按创建时间</option>
+            <option value="name_asc">按名称</option>
+            <option value="login_desc">按最近登录</option>
+          </select>
+          <select id="admPageSize">
+            <option value="10">每页 10</option>
+            <option value="20">每页 20</option>
+            <option value="50">每页 50</option>
+          </select>
+          <button id="admPrev" class="btn ghost">上一页</button>
+          <span id="admPageInfo" class="tag">1 / 1</span>
+          <button id="admNext" class="btn ghost">下一页</button>
+          <span style="flex:1"></span>
+          <select id="admMode">
+            <option value="local">本地存储</option>
+            <option value="server">服务端API</option>
+          </select>
+          <input id="admApi" class="input-like" placeholder="API Base (例如 https://api.example.com)" style="width:260px" />
+          <button id="admSelAll" class="btn ghost">全选</button>
+          <button id="admSelNone" class="btn ghost">清除选择</button>
+          <button id="admBulkAdmin" class="btn ghost">批量设为管理员</button>
+          <button id="admBulkUser" class="btn ghost">批量降级</button>
+          <button id="admBulkEnable" class="btn ghost">批量启用</button>
+          <button id="admBulkDisable" class="btn ghost">批量禁用</button>
+          <button id="admBulkCode" class="btn ghost">批量发验证码</button>
+          <button id="admBulkDel" class="btn ghost danger">批量删除</button>
+          <button id="admAdd" class="btn primary">新增用户</button>
+          <button id="admExport" class="btn ghost">导出</button>
+          <button id="admImport" class="btn ghost">导入</button>
+          <input id="admFile" type="file" accept="application/json" style="display:none" />
+        </div>
+        <div id="admList" class="world-list"></div>
+      </section>
+
+      <section class="glass" style="padding:14px;border-radius:16px;max-width:1080px;margin:16px auto 0;">
+        <h2 style="margin:0 0 12px 0">趋势</h2>
+        <div class="admin-stats">
+          <div class="stat-card"><div class="lbl">近14天注册</div><svg id="chReg" class="spark" viewBox="0 0 200 46" preserveAspectRatio="none"></svg></div>
+          <div class="stat-card"><div class="lbl">近14天登录</div><svg id="chLog" class="spark" viewBox="0 0 200 46" preserveAspectRatio="none"></svg></div>
+          <div class="stat-card"><div class="lbl">近4周注册</div><svg id="chRegW" class="spark" viewBox="0 0 200 46" preserveAspectRatio="none"></svg></div>
+          <div class="stat-card"><div class="lbl">转化漏斗</div><svg id="chFunnel" class="spark" viewBox="0 0 200 46" preserveAspectRatio="none"></svg></div>
+        </div>
+      </section>
+
+      <section class="glass" style="padding:14px;border-radius:16px;max-width:1080px;margin:16px auto 0;">
+        <h2 style="margin:0 0 12px 0">智能机器人服务（演示）</h2>
+        <div class="subline">说明：用户在“忘记密码”页面提交后会生成验证码。向机器人发送注册邮箱（或用户名），机器人将回复验证码（30分钟有效）。</div>
+        <div id="bot" style="display:grid;gap:8px;margin-top:10px;">
+          <div id="botLog" class="world-list" style="max-height:240px;overflow:auto;"></div>
+          <div style="display:flex;gap:8px;">
+            <input id="botMsg" type="text" placeholder="发送消息（输入用户邮箱或用户名）" style="flex:1;border:1px solid hsl(var(--border));background:hsl(var(--glass));color:hsl(var(--text));border-radius:10px;padding:8px 10px;" />
+            <button id="botSend" class="btn">发送</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="glass" style="padding:14px;border-radius:16px;max-width:1080px;margin:16px auto 0;">
+        <h2 style="margin:0 0 12px 0">审计日志</h2>
+        <div class="admin-toolbar">
+          <select id="auditFilter">
+            <option value="all">全部</option>
+            <option value="新增用户">新增用户</option>
+            <option value="编辑用户">编辑用户</option>
+            <option value="删除用户">删除用户</option>
+            <option value="升级为管理员">升级为管理员</option>
+            <option value="降级为用户">降级为用户</option>
+            <option value="禁用账户">禁用账户</option>
+            <option value="启用账户">启用账户</option>
+            <option value="批量发送验证码">批量发送验证码</option>
+            <option value="批量删除">批量删除</option>
+            <option value="批量设为管理员">批量设为管理员</option>
+            <option value="批量降级">批量降级</option>
+            <option value="批量启用">批量启用</option>
+            <option value="批量禁用">批量禁用</option>
+            <option value="导入用户">导入用户</option>
+            <option value="生成验证码">生成验证码</option>
+          </select>
+          <span style="flex:1"></span>
+          <button id="auditExport" class="btn ghost">导出日志</button>
+          <button id="auditClear" class="btn ghost danger">清空日志</button>
+        </div>
+        <div id="auditList" class="world-list"></div>
+      </section>
+
+      <!-- User Modal -->
+      <div id="userModal" class="modal" aria-hidden="true" role="dialog">
+        <div class="modal-card">
+          <h3 id="umTitle" style="margin:0">新增用户</h3>
+          <form id="umForm" class="settings-body">
+            <input type="hidden" id="umIndex" />
+            <label class="setting-item">用户名
+              <input id="umUser" type="text" required />
+            </label>
+            <label class="setting-item">邮箱
+              <input id="umEmail" type="email" />
+            </label>
+            <label class="setting-item">角色
+              <select id="umRole">
+                <option value="user">普通用户</option>
+                <option value="admin">管理员</option>
+              </select>
+            </label>
+          </form>
+          <div id="umHint" class="hint"></div>
+          <div class="modal-actions">
+            <button id="umCancel" class="btn ghost">取消</button>
+            <button id="umSave" class="btn primary">保存</button>
+          </div>
+        </div>
+      </div>
+    </main>
+    <script src="guard.js" defer></script>
+    <script src="auth-effects.js" defer></script>
+    <script>
+      const USERS_KEY='auth_users_v1'; const CUR_KEY='auth_current_v1'; const RESET_KEY='auth_resets_v1'; const AUDIT_KEY='admin_audit_v1';
+      const qs=(id)=>document.getElementById(id);
+      function loadUsers(){ try{ return JSON.parse(localStorage.getItem(USERS_KEY)||'[]'); }catch{ return []; } }
+      function saveUsers(arr){ try{ localStorage.setItem(USERS_KEY, JSON.stringify(arr)); }catch{} }
+      function cur(){ try{ return JSON.parse(localStorage.getItem(CUR_KEY)||'null'); }catch{ return null; } }
+      function loadResets(){ try{ return JSON.parse(localStorage.getItem(RESET_KEY)||'[]'); }catch{ return []; } }
+      function saveResets(arr){ try{ localStorage.setItem(RESET_KEY, JSON.stringify(arr)); }catch{} }
+      function genCode(){ return Math.floor(100000 + Math.random()*900000).toString(); }
+      function loadAudit(){ try{ return JSON.parse(localStorage.getItem(AUDIT_KEY)||'[]'); }catch{ return []; } }
+      function saveAudit(arr){ try{ localStorage.setItem(AUDIT_KEY, JSON.stringify(arr)); }catch{} }
+      function addAudit(action, targets){ const a=loadAudit(); a.unshift({ ts: Date.now(), actor: (cur()?.username)||'-', action, targets }); while(a.length>200) a.pop(); saveAudit(a); renderAudit(); }
+
+      const me = cur(); if(!me){ location.href='login.html?next='+encodeURIComponent(location.pathname); }
+      const users = loadUsers(); const meUser=users.find(x=>x.username===me?.username);
+      if(!meUser || meUser.role!=='admin'){ alert('需要管理员权限'); location.href='index.html'; }
+
+      const list=qs('admList'); const fSearch=qs('admSearch'); const fRole=qs('admRole'); const fSort=qs('admSort');
+      const fPageSize=qs('admPageSize'); const pageInfo=qs('admPageInfo'); const btnPrev=qs('admPrev'); const btnNext=qs('admNext');
+      const modeSel=qs('admMode'); const apiInp=qs('admApi');
+      const stTotal=qs('stTotal'), stAdmins=qs('stAdmins'), stActive=qs('stActive');
+      let selected = new Set(); let page=1;
+
+      function fmtDate(ts){ if(!ts) return '-'; const d=Date.now()-ts; const min=60e3,h=60*min,day=24*h; if(d<min) return '刚刚'; if(d<h) return Math.floor(d/min)+' 分钟前'; if(d<day) return Math.floor(d/h)+' 小时前'; if(d<14*day) return Math.floor(d/day)+' 天前'; const dt=new Date(ts); return dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0'); }
+      function applyFilters(arr){ const q=(fSearch.value||'').trim().toLowerCase(); let out=arr.filter(u=>!q || u.username.toLowerCase().includes(q) || (u.email||'').toLowerCase().includes(q)); if(fRole.value!=='all'){ out = out.filter(u=> (u.role||'user')===fRole.value ); } const mode=fSort.value; out.sort((a,b)=>{ if(mode==='name_asc'){ return a.username.localeCompare(b.username,'zh'); } if(mode==='login_desc'){ return (b.lastLogin||0)-(a.lastLogin||0); } return (b.createdAt||0)-(a.createdAt||0); }); return out; }
+      function pageSlice(arr){ const ps=parseInt(fPageSize.value||'10',10); const total=Math.max(1, Math.ceil(arr.length/ps)); if(page>total) page=total; if(page<1) page=1; pageInfo.textContent = page+' / '+total; btnPrev.disabled = page<=1; btnNext.disabled = page>=total; const start=(page-1)*ps; return arr.slice(start, start+ps); }
+      function renderStats(){ stTotal.textContent=users.length; stAdmins.textContent=users.filter(u=>u.role==='admin').length; const seven=Date.now()-7*24*60*60*1000; stActive.textContent=users.filter(u=> (u.lastLogin||0)>=seven ).length; }
+      function rowCheckbox(u){ const cb=document.createElement('input'); cb.type='checkbox'; cb.checked=selected.has(u.username); cb.onchange=()=>{ if(cb.checked) selected.add(u.username); else selected.delete(u.username); }; return cb; }
+      function render(){ list.innerHTML=''; renderStats(); pageSlice(applyFilters(users)).forEach((x)=>{ const row=document.createElement('div'); row.className='world-item user-row';
+        const left=document.createElement('div'); left.appendChild(rowCheckbox(x)); const meta=document.createElement('div'); meta.style.marginLeft='8px'; meta.innerHTML=`<div class="w-title">${x.username} ${x.role==='admin'?'<span class="chip admin">管理员</span>':'<span class="chip">用户</span>'} ${x.disabled?'<span class="chip disabled">已禁用</span>':''}</div><div class="subline">创建：${fmtDate(x.createdAt)} · 最近登录：${fmtDate(x.lastLogin)}</div>`; left.style.display='flex'; left.style.alignItems='center'; left.appendChild(meta);
+        const mail=document.createElement('div'); mail.innerHTML = x.email?`<span class="tag" title="点击修改邮箱">${x.email}</span>`:'<span class="tag" title="点击设置邮箱">（无邮箱）</span>'; mail.addEventListener('click', ()=>{ const nv=prompt('修改邮箱', x.email||''); if(nv===null) return; x.email=(nv||'').trim(); saveUsers(users); addAudit('编辑用户',[x.username+' · 邮箱']); render(); });
+        const act=document.createElement('div'); act.className='user-actions';
+        const btnEdit=document.createElement('button'); btnEdit.className='btn ghost'; btnEdit.textContent='编辑'; btnEdit.onclick=()=>openEdit(users.findIndex(u=>u.username===x.username));
+        const btnRole=document.createElement('button'); btnRole.className='btn ghost'; btnRole.textContent= x.role==='admin'?'降级':'升级为管理员'; btnRole.onclick=()=>{ x.role = x.role==='admin'?'user':'admin'; saveUsers(users); addAudit(x.role==='admin'?'升级为管理员':'降级为用户',[x.username]); render(); };
+        const btnEnable=document.createElement('button'); btnEnable.className='btn ghost'; btnEnable.textContent= x.disabled?'启用':'禁用'; btnEnable.onclick=()=>{ x.disabled=!x.disabled; saveUsers(users); addAudit(x.disabled?'禁用账户':'启用账户',[x.username]); render(); };
+        const btnCode=document.createElement('button'); btnCode.className='btn ghost'; btnCode.textContent='发验证码'; btnCode.onclick=()=>{ const code=genCode(); const exp=Date.now()+30*60*1000; let ll=loadResets().filter(r=>r.username!==x.username); ll.push({ username:x.username, email:x.email||'', code, exp }); saveResets(ll); addAudit('生成验证码',[x.username]); alert('已为 '+x.username+' 生成验证码：'+code); };
+        const btnDel=document.createElement('button'); btnDel.className='btn ghost danger'; btnDel.textContent='删除'; btnDel.onclick=()=>{ if(confirm('删除用户 '+x.username+'？')){ const i=users.findIndex(u=>u.username===x.username); if(i>=0) users.splice(i,1); saveUsers(users); addAudit('删除用户',[x.username]); render(); } };
+        act.appendChild(btnEdit); act.appendChild(btnRole); act.appendChild(btnEnable); act.appendChild(btnCode); act.appendChild(btnDel);
+        row.appendChild(left); row.appendChild(mail); row.appendChild(act); list.appendChild(row); }); }
+      fSearch.addEventListener('input', ()=>{ page=1; render(); }); fRole.addEventListener('change', ()=>{ page=1; render(); }); fSort.addEventListener('change', ()=>{ page=1; render(); }); fPageSize.addEventListener('change', ()=>{ page=1; render(); }); btnPrev.addEventListener('click', ()=>{ page=Math.max(1,page-1); render(); }); btnNext.addEventListener('click', ()=>{ page=page+1; render(); });
+      // data source mode (stub)
+      modeSel.value = localStorage.getItem('admin_mode')||'local'; apiInp.value = localStorage.getItem('api_base')||''; function applyMode(){ const server = (modeSel.value==='server'); const dis = (el)=>{ if(el) el.disabled = server; }; [qs('admAdd'), qs('admExport'), qs('admImport'), qs('admBulkAdmin'), qs('admBulkUser'), qs('admBulkEnable'), qs('admBulkDisable'), qs('admBulkCode'), qs('admBulkDel')].forEach(dis); localStorage.setItem('admin_mode', modeSel.value); localStorage.setItem('api_base', apiInp.value||''); }
+      modeSel.addEventListener('change', applyMode); apiInp.addEventListener('change', applyMode); applyMode();
+
+      // Modal helpers
+      function openEdit(idx){ const m=qs('userModal'); const f=qs('umForm'); qs('umTitle').textContent = (idx==null?'新增用户':'编辑用户'); f.reset(); qs('umIndex').value = (idx==null?'-1':String(idx)); if(idx!=null){ const u=users[idx]; qs('umUser').value=u.username; qs('umEmail').value=u.email||''; qs('umRole').value=u.role||'user'; } m.classList.add('show'); }
+      qs('admAdd').addEventListener('click', ()=>openEdit(null)); qs('umCancel').addEventListener('click', ()=>qs('userModal').classList.remove('show'));
+      qs('umSave').addEventListener('click', async ()=>{
+        const idx=parseInt(qs('umIndex').value||'-1',10); const name=(qs('umUser').value||'').trim(); const email=(qs('umEmail').value||'').trim(); const role=qs('umRole').value; const hint=qs('umHint'); hint.textContent=''; if(!name){ hint.textContent='用户名必填'; return; }
+        if(idx<0){ if(users.find(u=>u.username.toLowerCase()===name.toLowerCase())){ hint.textContent='用户名已存在'; return; } const salt = (function(){ const a=new Uint8Array(16); crypto.getRandomValues(a); return Array.from(a).map(b=>b.toString(16).padStart(2,'0')).join(''); })();
+          async function hashPw(pw, saltHex){ const te=new TextEncoder(); const hexToBytes=(hex)=>{ const arr=[]; for(let i=0;i<hex.length;i+=2) arr.push(parseInt(hex.slice(i,i+2),16)); return new Uint8Array(arr); }; const data = new Uint8Array([...hexToBytes(salt), ...te.encode(pw)]); const h = await crypto.subtle.digest('SHA-256', data); return Array.from(new Uint8Array(h)).map(b=>b.toString(16).padStart(2,'0')).join(''); }
+          const temp = Math.random().toString(36).slice(2,10); const hash = await hashPw(temp, salt); users.push({ username:name, email, salt, hash, role, disabled:false, createdAt: Date.now(), nickname:'', avatar:'', loginCount:0, lastLogin:0 }); saveUsers(users); addAudit('新增用户',[name]); alert('已创建用户 '+name+'\n临时密码：'+temp);
+        } else { const u=users[idx]; const old=u.username; u.username=name; u.email=email; u.role=role; saveUsers(users); addAudit('编辑用户',[old+' -> '+name]); }
+        qs('userModal').classList.remove('show'); render();
+      });
+
+      // Export / Import
+      qs('admExport').addEventListener('click', ()=>{ const blob = new Blob([JSON.stringify(users,null,2)], {type:'application/json'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='users.json'; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); },0); });
+      qs('admImport').addEventListener('click', ()=>qs('admFile').click());
+      qs('admFile').addEventListener('change', (e)=>{ const f=e.target.files[0]; if(!f) return; const r=new FileReader(); r.onload=()=>{ try{ const arr=JSON.parse(r.result); if(!Array.isArray(arr)) throw new Error('格式错误'); if(!confirm('导入将覆盖现有用户列表，确定继续？')) return; localStorage.setItem(USERS_KEY, JSON.stringify(arr)); addAudit('导入用户',[arr.length+' 条']); location.reload(); }catch(err){ alert('导入失败：'+(err.message||err)); } }; r.readAsText(f); });
+
+      // Bulk actions
+      function selectedUsers(){ return users.filter(u=>selected.has(u.username)); }
+      qs('admSelAll').addEventListener('click', ()=>{ users.forEach(u=>selected.add(u.username)); render(); });
+      qs('admSelNone').addEventListener('click', ()=>{ selected.clear(); render(); });
+      qs('admBulkAdmin').addEventListener('click', ()=>{ const arr=selectedUsers(); arr.forEach(u=>u.role='admin'); saveUsers(users); addAudit('批量设为管理员', arr.map(u=>u.username)); render(); });
+      qs('admBulkUser').addEventListener('click', ()=>{ const arr=selectedUsers(); arr.forEach(u=>u.role='user'); saveUsers(users); addAudit('批量降级', arr.map(u=>u.username)); render(); });
+      qs('admBulkEnable').addEventListener('click', ()=>{ const arr=selectedUsers(); arr.forEach(u=>u.disabled=false); saveUsers(users); addAudit('批量启用', arr.map(u=>u.username)); render(); });
+      qs('admBulkDisable').addEventListener('click', ()=>{ const arr=selectedUsers(); arr.forEach(u=>u.disabled=true); saveUsers(users); addAudit('批量禁用', arr.map(u=>u.username)); render(); });
+      qs('admBulkCode').addEventListener('click', ()=>{ const arr=selectedUsers(); if(arr.length===0) return; let ll=loadResets().filter(r=>!arr.some(u=>u.username===r.username)); const now=Date.now(); arr.forEach(u=>{ ll.push({ username:u.username, email:u.email||'', code:genCode(), exp: now+30*60*1000 }); }); saveResets(ll); addAudit('批量发送验证码', arr.map(u=>u.username)); alert('已为 '+arr.length+' 位用户生成验证码'); });
+      qs('admBulkDel').addEventListener('click', ()=>{ const arr=selectedUsers(); if(arr.length===0) return; if(!confirm('确认删除选中的 '+arr.length+' 位用户？')) return; for(const u of arr){ const i=users.findIndex(x=>x.username===u.username); if(i>=0) users.splice(i,1); selected.delete(u.username); } saveUsers(users); addAudit('批量删除', arr.map(u=>u.username)); render(); });
+
+      // Audit render
+      function renderAudit(){ const box=qs('auditList'); const a=loadAudit(); const filter=(qs('auditFilter')?.value)||'all'; const arr = a.filter(x=> filter==='all' || x.action===filter ); box.innerHTML=''; arr.slice(0,100).forEach(item=>{ const row=document.createElement('div'); row.className='world-item'; const title=document.createElement('div'); title.className='w-title'; title.textContent=item.action; const meta=document.createElement('div'); meta.className='subline'; const date=new Date(item.ts); meta.textContent = date.toLocaleString()+' · '+(item.actor||'-')+' · '+(Array.isArray(item.targets)?item.targets.join(', '):''); row.appendChild(title); row.appendChild(meta); box.appendChild(row); }); }
+      renderAudit();
+      qs('auditFilter')?.addEventListener('change', renderAudit);
+      qs('auditExport')?.addEventListener('click', ()=>{ const a=loadAudit(); const blob=new Blob([JSON.stringify(a,null,2)], {type:'application/json'}); const url=URL.createObjectURL(blob); const link=document.createElement('a'); link.href=url; link.download='audit.json'; document.body.appendChild(link); link.click(); setTimeout(()=>{ URL.revokeObjectURL(url); link.remove(); },0); });
+      qs('auditClear')?.addEventListener('click', ()=>{ if(!confirm('确认清空审计日志？')) return; saveAudit([]); renderAudit(); });
+
+      // Charts
+      function lastNDays(n){ const arr=[]; const end=new Date(); end.setHours(0,0,0,0); for(let i=n-1;i>=0;i--){ const d=new Date(end); d.setDate(end.getDate()-i); arr.push(+d); } return arr; }
+      function countByDay(arr, key){ const days=lastNDays(14); const map=new Map(days.map(t=>[t,0])); arr.forEach(u=>{ const t=u[key]; if(!t) return; const d=new Date(t); d.setHours(0,0,0,0); const k=+d; if(map.has(k)) map.set(k, map.get(k)+1); }); return days.map(t=>({t, v: map.get(t)})); }
+      function spark(elId, data){ const svg=qs(elId); if(!svg) return; const w=200, h=46; const max=Math.max(1, ...data.map(d=>d.v)); const pts=data.map((d,i)=>{ const x=i*(w/(data.length-1)); const y=h - (d.v/max)*(h-8) - 4; return {x,y}; }); const d=pts.map((p,i)=> (i? 'L':'M')+p.x.toFixed(1)+','+p.y.toFixed(1)).join(' '); const area = `M0,${h} `+d+` L${w},${h} Z`; svg.innerHTML=`<path class="area" d="${area}"></path><path class="line" d="${d}"></path>`; }
+      function bars(elId, data){ const svg=qs(elId); if(!svg) return; const w=200, h=46; const max=Math.max(1, ...data.map(d=>d.v)); const bw=Math.max(8, Math.floor((w-10)/data.length)-6); svg.innerHTML=''; data.forEach((d,i)=>{ const x=5 + i*((w-10)/data.length); const barH=(d.v/max)*(h-8); const y=h-barH-4; const r=document.createElementNS('http://www.w3.org/2000/svg','rect'); r.setAttribute('x',x.toFixed(1)); r.setAttribute('y',y.toFixed(1)); r.setAttribute('width',bw.toString()); r.setAttribute('height',barH.toFixed(1)); r.setAttribute('rx','3'); r.setAttribute('fill','hsl(205 90% 50% / .6)'); svg.appendChild(r); }); }
+      function countByWeek(arr, key){ const end=new Date(); end.setHours(0,0,0,0); const weeks=[]; for(let i=3;i>=0;i--){ const wEnd=new Date(end); wEnd.setDate(end.getDate()-i*7); const wStart=new Date(wEnd); wStart.setDate(wEnd.getDate()-6); weeks.push({s:+wStart,e:+wEnd}); } return weeks.map(w=>({ t:w.e, v: arr.filter(u=>{ const t=u[key]; return t && t>=w.s && t<=w.e; }).length })); }
+      spark('chReg', countByDay(users,'createdAt'));
+      spark('chLog', countByDay(users,'lastLogin'));
+      bars('chRegW', countByWeek(users,'createdAt'));
+      (function(){ const all=users.length; const withEmail=users.filter(u=>u.email).length; const seven=Date.now()-7*24*60*60*1000; const active=users.filter(u=>(u.lastLogin||0)>=seven).length; const data=[{v:all},{v:withEmail},{v:active}]; bars('chFunnel', data); })();
+
+      // Robot service
+      function addLog(role, text){ const log=document.getElementById('botLog'); const item=document.createElement('div'); item.className='world-item'; const name=document.createElement('div'); name.className='w-title'; name.textContent=role==='user'?'你':'机器人'; const content=document.createElement('div'); content.textContent=text; item.appendChild(name); item.appendChild(content); log.appendChild(item); log.scrollTop=log.scrollHeight; }
+      document.getElementById('botSend').addEventListener('click', ()=>{
+        const el=document.getElementById('botMsg'); const msg=(el.value||'').trim(); if(!msg) return; addLog('user', msg); el.value='';
+        const target = users.find(x=>x.username.toLowerCase()===msg.toLowerCase() || (x.email||'').toLowerCase()===msg.toLowerCase());
+        if(!target){ addLog('bot','未识别的用户，请提供注册邮箱或用户名。'); return; }
+        const list=loadResets(); const item=list.find(x=>x.username===target.username && Date.now()<x.exp);
+        if(!item){ addLog('bot','未找到有效验证码。请提醒用户在“忘记密码”里先生成验证码。'); return; }
+        addLog('bot', '验证码：'+item.code+'（30分钟内有效）。请在“重置密码”页面输入验证码与新密码完成重置。');
+      });
+    </script>
+  </body>
+  </html>
+

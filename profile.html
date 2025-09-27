@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>资料 · 北京时间</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="icon" href="icons/logo.svg" type="image/svg+xml" />
+  </head>
+  <body>
+    <main class="app" style="opacity:1;filter:none;transform:none">
+      <header class="topbar">
+        <div class="brand"><img class="logo" src="icons/logo.svg" alt="" /><span class="title">资料</span></div>
+        <nav class="nav-links">
+          <a href="index.html">首页</a>
+          <a href="settings.html">设置</a>
+        </nav>
+      </header>
+      <section class="glass" style="padding:14px;border-radius:16px;max-width:680px;margin:0 auto;">
+        <h2 style="margin:0 0 12px 0">个人资料</h2>
+        <div class="settings-body">
+          <div style="display:flex; gap:16px; align-items:center;">
+            <img id="pfAvatar" alt="头像" style="width:96px;height:96px;border-radius:50%;object-fit:cover;border:1px solid hsl(var(--border));background:hsl(var(--glass))" />
+            <div>
+              <input id="pfAvatarFile" type="file" accept="image/*" />
+              <div class="hint">建议正方形图片，最大 ~1MB</div>
+            </div>
+          </div>
+          <label class="setting-item">用户名
+            <input id="pfUser" type="text" disabled />
+          </label>
+          <label class="setting-item">昵称
+            <input id="pfNick" type="text" />
+          </label>
+          <label class="setting-item">邮箱
+            <input id="pfEmail" type="email" />
+          </label>
+          <button id="pfSave" class="btn">保存</button>
+          <div id="pfHint" class="hint"></div>
+        </div>
+      </section>
+    </main>
+    <script src="guard.js" defer></script>
+    <script>
+      const USERS_KEY='auth_users_v1'; const CUR_KEY='auth_current_v1';
+      function loadUsers(){ try{ return JSON.parse(localStorage.getItem(USERS_KEY)||'[]'); }catch{ return []; } }
+      function saveUsers(arr){ try{ localStorage.setItem(USERS_KEY, JSON.stringify(arr)); }catch{} }
+      function cur(){ try{ return JSON.parse(localStorage.getItem(CUR_KEY)||'null'); }catch{ return null; } }
+      function dataUrl(file){ return new Promise((resolve,reject)=>{ const fr=new FileReader(); fr.onload=()=>resolve(fr.result); fr.onerror=reject; fr.readAsDataURL(file); }); }
+      const me=cur(); if(!me){ location.href='login.html?next='+encodeURIComponent(location.pathname); }
+      const users=loadUsers(); const u=users.find(x=>x.username===me.username);
+      const pfUser=document.getElementById('pfUser'); const pfNick=document.getElementById('pfNick'); const pfEmail=document.getElementById('pfEmail'); const pfAvatar=document.getElementById('pfAvatar'); const file=document.getElementById('pfAvatarFile'); const hint=document.getElementById('pfHint');
+      pfUser.value = u?.username||''; pfNick.value = u?.nickname||''; pfEmail.value=u?.email||''; pfAvatar.src = u?.avatar||'icons/logo.svg';
+      file.addEventListener('change', async ()=>{ const f=file.files?.[0]; if(!f) return; if(f.size>1024*1024){ hint.textContent='图片过大'; return; } const url=await dataUrl(f); pfAvatar.src=url; pfAvatar.dataset.new=url; });
+      document.getElementById('pfSave').addEventListener('click', ()=>{ const url=pfAvatar.dataset.new; if(url) u.avatar=url; u.nickname=pfNick.value.trim(); u.email=pfEmail.value.trim(); saveUsers(users); hint.textContent='已保存'; setTimeout(()=>hint.textContent='',1000); });
+    </script>
+  </body>
+  </html>
+

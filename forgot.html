@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>忘记密码 · 北京时间</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="icon" href="icons/logo.svg" type="image/svg+xml" />
+  </head>
+  <body class="auth-page">
+    <div class="bg-orbs"><span class="orb o1"></span><span class="orb o2"></span><span class="orb o3"></span></div>
+    <div class="auth-card effect-border">
+      <div class="auth-side">
+        <div>
+          <div class="auth-brand"><img src="icons/logo.svg" alt="" /><div class="auth-title">北京时间</div></div>
+          <div class="auth-desc">找回密码 · 安全重置</div>
+        </div>
+        <div class="auth-illus"></div>
+      </div>
+      <div class="auth-form">
+        <h2>忘记密码</h2>
+        <div class="sub">输入用户名或邮箱，我们将为你生成验证码</div>
+        <form id="fgForm" class="form" style="display:grid;gap:12px;margin-top:12px">
+          <label class="input">
+            <svg class="input-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10Z" stroke="currentColor" stroke-width="1.5"/><path d="M21 22a9 9 0 1 0-18 0" stroke="currentColor" stroke-width="1.5"/></svg>
+            <input id="fgIdent" type="text" placeholder="用户名或邮箱" required />
+          </label>
+          <button type="submit" class="btn">生成验证码</button>
+          <div id="fgHint" class="hint"></div>
+          <div class="divider">或</div>
+          <button id="robotBtn" type="button" class="btn ghost">联系智能机器人获取验证码</button>
+        </form>
+      </div>
+    </div>
+    <script src="auth-effects.js" defer></script>
+    <script>
+      const USERS_KEY='auth_users_v1'; const RESET_KEY='auth_resets_v1';
+      function loadUsers(){ try{ return JSON.parse(localStorage.getItem(USERS_KEY)||'[]'); }catch{ return []; } }
+      function saveResets(arr){ try{ localStorage.setItem(RESET_KEY, JSON.stringify(arr)); }catch{} }
+      function loadResets(){ try{ return JSON.parse(localStorage.getItem(RESET_KEY)||'[]'); }catch{ return []; } }
+      function genCode(){ return Math.floor(100000 + Math.random()*900000).toString(); }
+      const form=document.getElementById('fgForm');
+      form.addEventListener('submit',(e)=>{
+        e.preventDefault(); const ident=document.getElementById('fgIdent').value.trim(); const hint=document.getElementById('fgHint');
+        const idWrap=document.getElementById('fgIdent').closest('.input'); idWrap && idWrap.classList.remove('error'); hint.textContent=''; hint.classList.remove('warn');
+        const users=loadUsers(); const u = users.find(x=>x.username.toLowerCase()===ident.toLowerCase() || (x.email||'').toLowerCase()===ident.toLowerCase());
+        if(!u){ hint.textContent='未找到该用户'; idWrap && idWrap.classList.add('error'); hint.classList.add('warn'); return; }
+        const code = genCode(); const exp=Date.now()+30*60*1000; // 30分钟
+        let list=loadResets();
+        // remove existing for this user
+        list = list.filter(x=>x.username!==u.username);
+        list.push({ username:u.username, email:u.email||'', code, exp }); saveResets(list);
+        hint.textContent='验证码已生成：请联系智能机器人（发送注册邮箱）以获取验证码，然后前往重置页输入验证码完成重置。';
+        try{ if(typeof window.playLoginSuccess==='function'){ window.playLoginSuccess(); } }catch{}
+      });
+
+      // Simple robot simulation for demo
+      document.getElementById('robotBtn').addEventListener('click', ()=>{
+        const ident = prompt('发送给智能机器人：请输入注册邮箱（或用户名）'); if(!ident) return;
+        const users=loadUsers(); const u = users.find(x=>x.username.toLowerCase()===ident.toLowerCase() || (x.email||'').toLowerCase()===ident.toLowerCase());
+        const list=loadResets(); const item = u ? list.find(x=>x.username===u.username && Date.now()<x.exp) : null;
+        if(!item){ alert('机器人：未找到有效验证码，请先在本页生成或稍后再试。'); return; }
+        alert('机器人：您的验证码是 ' + item.code + '，请在重置页面输入完成重置。');
+        location.href='reset.html';
+      });
+    </script>
+  </body>
+  </html>
+
