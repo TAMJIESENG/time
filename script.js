@@ -159,6 +159,14 @@
     return { calibrate, nowMs, lastStatus, autoLoop };
   })();
 
+  // —— Export calibrated clock for other modules ——
+  try {
+    window.CST = window.CST || {};
+    window.CST.now = calibrator.nowMs;
+    window.CST.calibrate = calibrator.calibrate;
+    window.CST.status = calibrator.lastStatus;
+  } catch {}
+
   // —— 表盘刻度 ——
   function buildTicks() {
     if (!ticksEl) return;
